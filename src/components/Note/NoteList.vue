@@ -12,7 +12,7 @@ export default {
   name: 'NoteList',
   components: { NoteItem },
   computed: {
-    ...mapGetters('note', ['notes']),
+    ...mapGetters(['notes']),
   },
 };
 </script>

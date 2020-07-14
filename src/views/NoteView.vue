@@ -14,7 +14,12 @@
       </button>
     </div>
     <NoteList />
-    <NoteCreate :newNote="newNote" :show="isModalVisible" @close="closeModal" />
+    <NoteCreate
+      :newNote="newNote"
+      :show="isModalVisible"
+      @close="closeModal"
+      @clear="clearNote"
+    />
   </div>
 </template>
 
@@ -30,19 +35,20 @@ export default {
     return {
       newNote: {
         title: '',
-        todos: [],
       },
       isModalVisible: false,
     };
   },
   computed: {
-    ...mapGetters('note', ['lengthNote']),
+    ...mapGetters(['lengthNote']),
   },
   methods: {
     createNote() {
       this.newNote.title.trim().length !== 0 ? this.showModal() : '';
     },
-
+    clearNote() {
+      this.newNote.title = '';
+    },
     showModal() {
       this.isModalVisible = true;
     },

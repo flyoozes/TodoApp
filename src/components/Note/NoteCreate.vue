@@ -5,7 +5,7 @@
     </template>
     <template v-slot:body>
       <TodoList
-        :todos="newNote.todos"
+        :todos="todos"
         @add="addTodo"
         @remove="removeTodo"
         @update="updateTodo"
@@ -37,8 +37,13 @@ export default {
     },
     show: Boolean,
   },
+  data() {
+    return {
+      todos: [],
+    };
+  },
   methods: {
-    ...mapActions('note', ['addNote']),
+    ...mapActions(['addNote', 'addTodos']),
     closeModal() {
       this.$emit('close');
     },
@@ -47,12 +52,16 @@ export default {
       this.addNote({
         id: this.$uuid.v1(),
         ...this.newNote,
+      }).then((noteId) => {
+        this.addTodos(this.todos.map((todo) => ({ ...todo, noteId })));
+        this.todos = [];
+        this.$emit('clear');
       });
 
       this.closeModal();
     },
     addTodo(todoTitle) {
-      this.newNote.todos.push({
+      this.todos.push({
         id: this.$uuid.v4(),
         title: todoTitle,
         completed: false,

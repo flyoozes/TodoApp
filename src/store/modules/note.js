@@ -18,7 +18,9 @@ const getters = {
 
 const actions = {
   async addNote({ commit }, noteData) {
-    commit('updateNote', noteData);
+    return new Promise((resolve) => {
+      commit('updateNote', { note: noteData, callback: resolve });
+    });
   },
   async removeNote({ commit }, note) {
     commit('removeNote', note);
@@ -29,8 +31,9 @@ const actions = {
 };
 
 const mutations = {
-  updateNote: (state, note) => {
+  updateNote: (state, { note, callback }) => {
     state.notes = arrayHelper.updateOrInsert(note, state.notes);
+    callback(note.id);
   },
   removeNote(state, note) {
     state.notes = state.notes.filter((n) => n.id !== note.id);
@@ -42,7 +45,6 @@ const mutations = {
 };
 
 export default {
-  namespaced: true,
   state,
   getters,
   actions,

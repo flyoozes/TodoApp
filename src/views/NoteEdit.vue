@@ -25,15 +25,15 @@
     </div>
     <div class="NoteEdit__content">
       <TodoList
-        :todos="note.todos"
+        :todos="todos"
         @add="addTodo"
         @remove="removeTodo"
         @update="updateTodo"
       />
     </div>
     <div class="NoteEdit__footer">
-      <button class="NoteEdit__button left" @click="cancelNote">Cancel</button>
-      <button class="NoteEdit__button" @click="saveNote">Save</button>
+      <button class="NoteEdit__button left" @click="cancel">Cancel</button>
+      <button class="NoteEdit__button" @click="save">Save</button>
     </div>
     <div class="">
       <button v-if="canUndo" @click="undo">Undo</button>
@@ -49,7 +49,7 @@ import { events } from '@/utils/events';
 
 import TodoList from '@/components/Todo/TodoList.vue';
 
-const EMPTY_STATE = 'note/resetState';
+const EMPTY_STATE = 'resetState';
 
 export default {
   name: 'NoteEdit',
@@ -63,9 +63,14 @@ export default {
       done: [],
       undone: [],
       newMutation: true,
+      note: null,
+      todos: [],
+      deletedTodos: [],
     };
   },
   created() {
+    this.note = this.noteById(this.id);
+    this.todos = this.todosById(this.note.id);
     this.$store.subscribe((mutation) => {
       if (mutation.type !== EMPTY_STATE) {
         this.done.push(mutation);
@@ -76,10 +81,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters('note', ['noteById']),
-    note() {
-      return this.noteById(this.id);
-    },
+    ...mapGetters(['noteById', 'todosById']),
     canRedo() {
       return this.undone.length;
     },
@@ -88,23 +90,29 @@ export default {
     },
   },
   methods: {
-    ...mapActions('note', ['updateNote']),
+    ...mapActions(['updateNote', 'updateTodos']),
     addTodo(title) {
       if (this.title === '') return;
-      this.note.todos.push({
+      this.todos.push({
         id: this.$uuid.v4(),
         title: title,
         completed: false,
+        noteId: this.note.id,
       });
     },
     removeTodo(id) {
-      this.note.todos = this.note.todos.filter((n) => n.id !== id);
+      this.todos = this.todos.filter((n) => n.id !== id);
+      this.deletedTodos.push(id);
     },
     updateTodo(todo) {
-      this.note.todos = arrayHelper.updateOrInsert(todo, this.note.todos);
+      this.todos = arrayHelper.updateOrInsert(todo, this.todos);
     },
-    saveNote() {
-      this.updateNote(this.note);
+    save() {
+      // this.updateNote(this.note);
+      this.updateTodos({
+        todos: this.todos,
+        noteId: this.note.id,
+      });
       // this.$router.push({ path: '/' });
     },
     editNote() {
@@ -119,7 +127,7 @@ export default {
       this.note.title = this.beforeEdit;
       this.editing = false;
     },
-    cancelNote() {
+    cancel() {
       events.$emit('open', {
         title: 'Confirm',
         message: `Are you sure you want to cancel editing?`,
@@ -139,12 +147,17 @@ export default {
       this.newMutation = false;
       this.$store.commit(EMPTY_STATE);
       this.done.forEach((mutation) => {
+        console.log(mutation);
         this.$store.commit(`${mutation.type}`, mutation.payload);
         this.done.pop();
       });
       this.newMutation = true;
 
-      this.updateNote(this.note);
+      // this.updateNote(this.note);
+      this.updateTodos({
+        todos: this.todos,
+        noteId: this.note.id,
+      });
     },
     redo() {
       let commit = this.undone.pop();
@@ -152,7 +165,11 @@ export default {
       this.$store.commit(`${commit.type}`, commit.payload);
       this.newMutation = true;
 
-      this.updateNote(this.note);
+      // this.updateNote(this.note);
+      this.updateTodos({
+        todos: this.todos,
+        noteId: this.note.id,
+      });
     },
   },
   directives: {

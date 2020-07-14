@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import note from './modules/note';
+import todo from './modules/todo';
 
 import { VuexPersistence } from 'vuex-persist';
 
@@ -13,6 +14,7 @@ const vuexLocal = new VuexPersistence({
 const store = new Vuex.Store({
   modules: {
     note,
+    todo,
   },
   plugins: [vuexLocal.plugin],
 });

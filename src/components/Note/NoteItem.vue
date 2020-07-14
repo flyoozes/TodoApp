@@ -19,7 +19,7 @@
               todo.title
             }}</label>
           </div>
-          <span v-if="this.note.todos.length > this.limit">
+          <span v-if="this.todos.length > this.limit">
             <router-link
               class="NoteItem__link"
               :to="{ name: 'note', params: { id: note.id } }"
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { events } from '@/utils/events';
 
 export default {
@@ -53,11 +53,17 @@ export default {
   data() {
     return {
       limit: 3,
+      todos: [],
     };
   },
+  created() {
+    this.todos = this.todosById(this.note.id);
+  },
   computed: {
+    ...mapGetters(['todosById']),
+
     computedTodos() {
-      return this.note.todos.slice(0, this.limit);
+      return this.todosById(this.note.id).slice(0, this.limit);
     },
   },
   methods: {
