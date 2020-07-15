@@ -5,7 +5,7 @@
         class="NoteItem__checkbox"
         type="checkbox"
         :id="`todo-item-${dataTodo.id}`"
-        :value="dataTodo.completed"
+        v-model="dataTodo.completed"
         @change="doneEdit"
       />
       <label
