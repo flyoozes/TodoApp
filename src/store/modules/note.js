@@ -39,9 +39,10 @@ const mutations = {
     state.notes = state.notes.filter((n) => n.id !== note.id);
   },
 
-  resetState: (state) => {
-    Object.assign(state, initialState);
-  },
+  // emptyState: () => {
+  //   // Object.assign(state, initialState);
+  //   this.$store.replaceState([]);
+  // },
 };
 
 export default {

@@ -1,4 +1,5 @@
 function updateOrInsert(newItem, array) {
+  console.log(newItem, array);
   const itemInArray = array.find((fromArray) => fromArray.id === newItem.id);
 
   if (itemInArray === undefined) {

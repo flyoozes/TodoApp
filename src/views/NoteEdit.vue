@@ -11,7 +11,7 @@
             v-else
             class="NoteEdit__edit-label"
             type="text"
-            v-model="note.title"
+            :value="note.title"
             @blur="doneEdit"
             @keyup.enter="doneEdit"
             @keyup.esc="cancelEdit"
@@ -36,7 +36,7 @@
       <button class="NoteEdit__button" @click="save">Save</button>
     </div>
     <div class="">
-      <button v-if="canUndo" @click="undo">Undo</button>
+      <button v-if="canUndo" @click="makeUndo">Undo</button>
       <button v-if="canRedo" @click="redo">Redo</button>
     </div>
   </div>
@@ -44,12 +44,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import arrayHelper from '@/utils/array';
+// import arrayHelper from '@/utils/array';
 import { events } from '@/utils/events';
 
 import TodoList from '@/components/Todo/TodoList.vue';
 
-const EMPTY_STATE = 'resetState';
+// const EMPTY_STATE = 'resetState';
 
 export default {
   name: 'NoteEdit',
@@ -60,37 +60,37 @@ export default {
       newTitle: '',
       editing: false,
       beforeEdit: '',
-      done: [],
-      undone: [],
-      newMutation: true,
-      note: null,
+      // done: [],
+      // undone: [],
+      // newMutation: true,
+      note: {},
       todos: [],
       deletedTodos: [],
     };
   },
   created() {
     this.note = this.noteById(this.id);
-    this.todos = this.todosById(this.note.id);
-    this.$store.subscribe((mutation) => {
-      if (mutation.type !== EMPTY_STATE) {
-        this.done.push(mutation);
-      }
-      if (this.newMutation) {
-        this.undone = [];
-      }
-    });
+    this.todos = this.$store.getters.todosById(this.note.id);
+    // this.$store.subscribe((mutation) => {
+    //   if (mutation.type !== EMPTY_STATE) {
+    //     this.done.push(mutation);
+    //   }
+    //   if (this.newMutation) {
+    //     this.undone = [];
+    //   }
+    // });
   },
   computed: {
     ...mapGetters(['noteById', 'todosById']),
-    canRedo() {
-      return this.undone.length;
-    },
-    canUndo() {
-      return this.done.length;
-    },
+    // canRedo() {
+    //   return this.undone.length;
+    // },
+    // canUndo() {
+    //   return this.done.length;
+    // },
   },
   methods: {
-    ...mapActions(['updateNote', 'updateTodos']),
+    ...mapActions(['updateNote', 'updateTodos', 'addNote']),
     addTodo(title) {
       if (this.title === '') return;
       this.todos.push({
@@ -105,7 +105,8 @@ export default {
       this.deletedTodos.push(id);
     },
     updateTodo(todo) {
-      this.todos = arrayHelper.updateOrInsert(todo, this.todos);
+      this.todos = this.todos.map((obj) => (obj.id === todo.id ? todo : obj));
+      // this.todos = arrayHelper.updateOrInsert(todo, this.todos);
     },
     save() {
       // this.updateNote(this.note);
@@ -142,18 +143,24 @@ export default {
         },
       });
     },
-    undo() {
-      this.undone.push(this.done.pop());
-      this.newMutation = false;
-      this.$store.commit(EMPTY_STATE);
-      this.done.forEach((mutation) => {
-        console.log(mutation);
-        this.$store.commit(`${mutation.type}`, mutation.payload);
-        this.done.pop();
-      });
-      this.newMutation = true;
+    makeUndo() {
+      // this.undone.push(this.done.pop());
+      // this.newMutation = false;
+      // this.$store.commit(EMPTY_STATE);
+      // this.done.forEach((mutation) => {
+      //   console.log(mutation);
+      //   this.$store.commit(`${mutation.type}`, mutation.payload);
+      //   this.done.pop();
+      // });
+      // this.newMutation = true;
 
-      // this.updateNote(this.note);
+      // // this.updateNote(this.note);
+      // this.updateTodos({
+      //   todos: this.todos,
+      //   noteId: this.note.id,
+      // });]
+      this.undo();
+      this.addNote(this.note);
       this.updateTodos({
         todos: this.todos,
         noteId: this.note.id,

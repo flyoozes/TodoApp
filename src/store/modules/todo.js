@@ -41,9 +41,10 @@ const mutations = {
   removeTodo(state, todo) {
     state.todos = state.todos.filter((n) => n.id !== todo.id);
   },
-  resetState: (state) => {
-    Object.assign(state, initialState);
-  },
+  // emptyState: () => {
+  //   // Object.assign(state, initialState);
+  //   // this.$store.replaceState([]);
+  // },
 };
 
 export default {

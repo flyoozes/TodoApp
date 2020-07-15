@@ -4,27 +4,27 @@
       <input
         class="NoteItem__checkbox"
         type="checkbox"
-        :id="`todo-item-${todo.id}`"
-        v-model="todo.completed"
+        :id="`todo-item-${dataTodo.id}`"
+        :value="dataTodo.completed"
         @change="doneEdit"
       />
       <label
         class="NoteItem__checkbox-label"
-        :for="`todo-item-${todo.id}`"
+        :for="`todo-item-${dataTodo.id}`"
       ></label>
       <div
         v-if="!editing"
         @dblclick="editTodo"
         class="TodoItem__label"
-        :class="{ completed: todo.completed }"
+        :class="{ completed: dataTodo.completed }"
       >
-        {{ todo.title }}
+        {{ dataTodo.title }}
       </div>
       <input
         v-else
         class="TodoItem__edit"
         type="text"
-        v-model="todo.title"
+        v-model="dataTodo.title"
         @blur="doneEdit"
         @keyup.enter="doneEdit"
         @keyup.esc="cancelEdit"
@@ -32,7 +32,7 @@
       />
     </div>
     <div>
-      <span class="TodoItem__remove" @click="removeTodo(todo.id)">
+      <span class="TodoItem__remove" @click="removeTodo(dataTodo.id)">
         &times;
       </span>
     </div>
@@ -52,6 +52,7 @@ export default {
     return {
       editing: false,
       beforeEdit: '',
+      dataTodo: this.todo,
     };
   },
   methods: {
@@ -59,18 +60,18 @@ export default {
       this.$emit('remove', id);
     },
     editTodo() {
-      this.beforeEdit = this.todo.title;
+      this.beforeEdit = this.dataTodo.title;
       this.editing = true;
     },
     doneEdit() {
-      if (this.todo.title == '') {
-        this.todo.title = this.beforeEdit;
+      if (this.dataTodo.title == '') {
+        this.dataTodo.title = this.beforeEdit;
       }
       this.editing = false;
-      this.$emit('updateTodo', this.todo);
+      this.$emit('updateTodo', this.dataTodo);
     },
     cancelEdit() {
-      this.todo.title = this.beforeEdit;
+      this.dataTodo.title = this.beforeEdit;
       this.editing = false;
     },
   },
