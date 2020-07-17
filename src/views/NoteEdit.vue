@@ -35,10 +35,6 @@
       <button class="NoteEdit__button left" @click="cancelNote">Cancel</button>
       <button class="NoteEdit__button" @click="saveNote">Save</button>
     </div>
-    <div class="">
-      <button v-if="canUndo" @click="undo">Undo</button>
-      <button v-if="canRedo" @click="redo">Redo</button>
-    </div>
   </div>
 </template>
 
@@ -60,31 +56,12 @@ export default {
       newTitle: '',
       editing: false,
       beforeEdit: '',
-      done: [],
-      undone: [],
-      newMutation: true,
     };
-  },
-  created() {
-    this.$store.subscribe((mutation) => {
-      if (mutation.type !== EMPTY_STATE) {
-        this.done.push(mutation);
-      }
-      if (this.newMutation) {
-        this.undone = [];
-      }
-    });
   },
   computed: {
     ...mapGetters('note', ['noteById']),
     note() {
       return this.noteById(this.id);
-    },
-    canRedo() {
-      return this.undone.length;
-    },
-    canUndo() {
-      return this.done.length;
     },
   },
   methods: {
@@ -105,7 +82,7 @@ export default {
     },
     saveNote() {
       this.updateNote(this.note);
-      // this.$router.push({ path: '/' });
+      this.$router.push({ path: '/' });
     },
     editNote() {
       this.beforeEdit = this.note.title;
@@ -133,26 +110,6 @@ export default {
           }
         },
       });
-    },
-    undo() {
-      this.undone.push(this.done.pop());
-      this.newMutation = false;
-      this.$store.commit(EMPTY_STATE);
-      this.done.forEach((mutation) => {
-        this.$store.commit(`${mutation.type}`, mutation.payload);
-        this.done.pop();
-      });
-      this.newMutation = true;
-
-      this.updateNote(this.note);
-    },
-    redo() {
-      let commit = this.undone.pop();
-      this.newMutation = false;
-      this.$store.commit(`${commit.type}`, commit.payload);
-      this.newMutation = true;
-
-      this.updateNote(this.note);
     },
   },
   directives: {
