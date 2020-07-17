@@ -1,29 +1,12 @@
-# todo-app
+# Basic Todo App made with Vue. 
 
-## Project setup
+## Run project by Docker Compose (will be available at localhost:8081)
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
+docker-compose up -d --build
 ```
 
-### Compiles and minifies for production
+## Run project local
 ```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
+npm install && npm run serve
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
