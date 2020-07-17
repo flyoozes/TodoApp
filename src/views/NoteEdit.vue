@@ -45,8 +45,6 @@ import { events } from '@/utils/events';
 
 import TodoList from '@/components/Todo/TodoList.vue';
 
-const EMPTY_STATE = 'note/resetState';
-
 export default {
   name: 'NoteEdit',
   components: { TodoList },
